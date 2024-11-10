@@ -286,6 +286,12 @@ pub(crate) fn route_action(
             };
             senders.send_to_pty(pty_instr).with_context(err_context)?;
         },
+        Action::SplitPaneToFour(start_suppressed) => {
+            let shell = default_shell.clone();
+            let pty_inst =  PtyInstruction::SplitTerminalToFour(shell, None, client_id);
+            
+            senders.send_to_pty(pty_instr).with_context(err_context)?;
+        },
         Action::EditFile(
             open_file_payload,
             split_direction,

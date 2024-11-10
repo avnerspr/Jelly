@@ -382,6 +382,7 @@ pub enum PtyContext {
     OpenInPlaceEditor,
     SpawnTerminalVertically,
     SpawnTerminalHorizontally,
+    SplitTerminalToFour,
     UpdateActivePane,
     GoToTab,
     NewTab,
