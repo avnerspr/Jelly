@@ -1,10 +1,9 @@
-use super::generated_api::api::action::SplitPaneToFourPayload;
 pub use super::generated_api::api::{
     action::{
         action::OptionalPayload, Action as ProtobufAction, ActionName as ProtobufActionName,
         DumpScreenPayload, EditFilePayload, GoToTabNamePayload, IdAndName,
         LaunchOrFocusPluginPayload, MovePanePayload, MoveTabDirection as ProtobufMoveTabDirection,
-        NameAndValue as ProtobufNameAndValue, NewFloatingPanePayload, NewPanePayload,
+        NameAndValue as ProtobufNameAndValue, NewFloatingPanePayload, NewPanePayload, FourtifyPayload,
         NewPluginPanePayload, NewTiledPanePayload, PaneIdAndShouldFloat,
         PluginConfiguration as ProtobufPluginConfiguration, Position as ProtobufPosition,
         RunCommandAction as ProtobufRunCommandAction, ScrollAtPayload,
@@ -899,14 +898,14 @@ impl TryFrom<Action> for ProtobufAction {
                     })),
                 })
             },
-            Action::SplitPaneToFour(direction, new_pane_name, _start_suppressed) => {
+            Action::Fourtify(direction, new_pane_name, _start_suppressed) => {
                 let direction = direction.and_then(|direction| {
                     let protobuf_direction: ProtobufResizeDirection = direction.try_into().ok()?;
                     Some(protobuf_direction as i32)
                 });
                 Ok(ProtobufAction {
-                    name: ProtobufActionName::SplitPaneToFour as i32,
-                    optional_payload: Some(OptionalPayload::SplitPaneToFourPayload(SplitPaneToFourPayload {
+                    name: ProtobufActionName::Fourtify as i32,
+                    optional_payload: Some(OptionalPayload::FourtifyPayload(FourtifyPayload {
                         direction,
                         pane_name: new_pane_name,
                     })),

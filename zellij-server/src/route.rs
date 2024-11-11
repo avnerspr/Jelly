@@ -286,7 +286,7 @@ pub(crate) fn route_action(
             };
             senders.send_to_pty(pty_instr).with_context(err_context)?;
         },
-        Action::SplitPaneToFour(_direction, _name, _start_suppressed) => {
+        Action::Fourtify(_direction, _name, _start_suppressed) => {
             let shell = default_shell.clone();
             let pty_instr =  PtyInstruction::SplitTerminalToFour(shell, None, client_id);
             

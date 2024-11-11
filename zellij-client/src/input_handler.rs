@@ -312,6 +312,7 @@ impl InputHandler {
             | Action::SwitchToMode(..)
             | Action::ClearScreen
             | Action::NewPane(..)
+            | Action::Fourtify(..)
             | Action::Run(_)
             | Action::NewTiledPane(..)
             | Action::NewFloatingPane(..)

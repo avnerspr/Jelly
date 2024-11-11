@@ -1147,11 +1147,15 @@ fn get_keys_and_hints(mi: &ModeInfo) -> Vec<(String, String, Vec<KeyWithModifier
     // choices. Do it here before we dedupe the keymap below!
     let base_mode = mi.base_mode;
     let to_basemode_keys = base_mode.map(|b| action_key(&old_keymap, &[to_base_mode(b)])).unwrap_or_else(|| action_key(&old_keymap, &[TO_NORMAL]));
+    let normal_with_ctrl = to_basemode_keys.iter().find(|x| x.key_modifiers.contains(&KeyModifier::Ctrl));
     let to_basemode_key = if to_basemode_keys.contains(&KeyWithModifier::new(BareKey::Enter)) {
         vec![KeyWithModifier::new(BareKey::Enter)]
-    } else {
+    }else {
         // Yield `vec![key]` if `to_normal_keys` has at least one key, or an empty vec otherwise.
-        to_basemode_keys.into_iter().take(1).collect()
+        match normal_with_ctrl {
+            Some(key) => vec![key.clone()],
+            None => to_basemode_keys.into_iter().take(1).collect()
+        }
     };
 
     // Sort and deduplicate the keybindings first. We sort after the `Key`s, and deduplicate by
@@ -1173,7 +1177,7 @@ fn get_keys_and_hints(mi: &ModeInfo) -> Vec<(String, String, Vec<KeyWithModifier
 
     if mi.mode == IM::Pane { vec![
         (s("New"), s("New"), single_action_key(&km, &[A::NewPane(None, None, false), TO_NORMAL])),
-        (s("Fourtify"), s("Fourtify"), single_action_key(&km, &[A::SplitPaneToFour(None, None, false), TO_NORMAL])),
+        (s("Fourtify"), s("Fourtify"), vec![KeyWithModifier::new(BareKey::Char('+'))]), // this is me giving up
         (s("Change Focus"), s("Move"),
             action_key_group(&km, &[&[A::MoveFocus(Dir::Left)], &[A::MoveFocus(Dir::Down)],
                 &[A::MoveFocus(Dir::Up)], &[A::MoveFocus(Dir::Right)]])),

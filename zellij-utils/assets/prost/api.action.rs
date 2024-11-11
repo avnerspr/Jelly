@@ -38,6 +38,8 @@ pub mod action {
         ScrollDownAtPayload(super::ScrollAtPayload),
         #[prost(message, tag = "13")]
         NewPanePayload(super::NewPanePayload),
+        #[prost(message, tag = "49")]
+        FourtifyPayload(super::FourtifyPayload),
         #[prost(message, tag = "14")]
         EditFilePayload(super::EditFilePayload),
         #[prost(message, tag = "15")]
@@ -108,8 +110,6 @@ pub mod action {
         MessagePayload(super::CliPipePayload),
         #[prost(enumeration = "super::MoveTabDirection", tag = "48")]
         MoveTabPayload(i32),
-        #[prost(message, tag = "49")]
-        SplitPaneToFourPayload(super::SplitPaneToFourPayload),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -224,7 +224,7 @@ pub struct NewPanePayload {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SplitPaneToFourPayload {
+pub struct FourtifyPayload {
     #[prost(enumeration = "super::resize::ResizeDirection", optional, tag = "1")]
     pub direction: ::core::option::Option<i32>,
     #[prost(string, optional, tag = "2")]
@@ -465,7 +465,7 @@ pub enum ActionName {
     CliPipe = 82,
     MoveTab = 83,
     KeybindPipe = 84,
-    SplitPaneToFour = 85,
+    Fourtify = 85,
 }
 impl ActionName {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -504,6 +504,7 @@ impl ActionName {
             ActionName::TogglePaneFrames => "TogglePaneFrames",
             ActionName::ToggleActiveSyncTab => "ToggleActiveSyncTab",
             ActionName::NewPane => "NewPane",
+            ActionName::Fourtify => "Fourtify",
             ActionName::EditFile => "EditFile",
             ActionName::NewFloatingPane => "NewFloatingPane",
             ActionName::NewTiledPane => "NewTiledPane",
@@ -559,7 +560,6 @@ impl ActionName {
             ActionName::CliPipe => "CliPipe",
             ActionName::MoveTab => "MoveTab",
             ActionName::KeybindPipe => "KeybindPipe",
-            ActionName::SplitPaneToFour => "SplitPaneToFour",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -650,7 +650,6 @@ impl ActionName {
             "CliPipe" => Some(Self::CliPipe),
             "MoveTab" => Some(Self::MoveTab),
             "KeybindPipe" => Some(Self::KeybindPipe),
-            "SplitPaneToFour" => Some(Self::SplitPaneToFour),
             _ => None,
         }
     }
