@@ -1,3 +1,4 @@
+use super::generated_api::api::action::SplitPaneToFourPayload;
 pub use super::generated_api::api::{
     action::{
         action::OptionalPayload, Action as ProtobufAction, ActionName as ProtobufActionName,
@@ -893,6 +894,19 @@ impl TryFrom<Action> for ProtobufAction {
                 Ok(ProtobufAction {
                     name: ProtobufActionName::NewPane as i32,
                     optional_payload: Some(OptionalPayload::NewPanePayload(NewPanePayload {
+                        direction,
+                        pane_name: new_pane_name,
+                    })),
+                })
+            },
+            Action::SplitPaneToFour(direction, new_pane_name, _start_suppressed) => {
+                let direction = direction.and_then(|direction| {
+                    let protobuf_direction: ProtobufResizeDirection = direction.try_into().ok()?;
+                    Some(protobuf_direction as i32)
+                });
+                Ok(ProtobufAction {
+                    name: ProtobufActionName::SplitPaneToFour as i32,
+                    optional_payload: Some(OptionalPayload::SplitPaneToFourPayload(SplitPaneToFourPayload {
                         direction,
                         pane_name: new_pane_name,
                     })),

@@ -159,7 +159,7 @@ pub enum Action {
     /// If no direction is specified, will try to use the biggest available space.
     NewPane(Option<Direction>, Option<String>, bool), // String is an optional pane name
 
-    SplitPaneToFour(bool), // split pane to 4 panes in a 2x2 arrangment 
+    SplitPaneToFour(Option<Direction>, Option<String>, bool), // split pane to 4 panes in a 2x2 arrangment 
     /// Open the file in a new pane using the default editor, bool -> start suppressed
     EditFile(
         OpenFilePayload,

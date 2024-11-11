@@ -544,16 +544,16 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                     _ => (false, None, name),
                 };
                 match pty
-                    .spawn_terminal(terminal_action, ClientTabIndexOrPaneId::ClientId(client_id))
+                    .spawn_terminal(terminal_action.clone(), ClientTabIndexOrPaneId::ClientId(client_id))
                     .with_context(err_context)
                 {
                     Ok((pid1, starts_held)) => {
-                        let hold_for_command = if starts_held { run_command } else { None };
+                        let hold_for_command = if starts_held { run_command.clone() } else { None };
                         pty.bus
                             .senders
                             .send_to_screen(ScreenInstruction::HorizontalSplit(
                                 PaneId::Terminal(pid1),
-                                pane_title,
+                                pane_title.clone(),
                                 hold_for_command,
                                 client_id,
                             ))
@@ -567,12 +567,12 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                     .senders
                                     .send_to_screen(ScreenInstruction::HorizontalSplit(
                                         PaneId::Terminal(*terminal_id),
-                                        pane_title,
+                                        pane_title.clone(),
                                         hold_for_command,
                                         client_id,
                                     ))
                                     .with_context(err_context)?;
-                                if let Some(run_command) = run_command {
+                                if let Some(ref run_command) = run_command {
                                     pty.bus
                                         .senders
                                         .send_to_screen(ScreenInstruction::PtyBytes(
@@ -590,7 +590,7 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                         .send_to_screen(ScreenInstruction::HoldPane(
                                             PaneId::Terminal(*terminal_id),
                                             Some(2), // exit status
-                                            run_command,
+                                            run_command.clone(),
                                             None,
                                             None,
                                         ))
@@ -603,16 +603,16 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                 }
                 // Second Split
                 match pty
-                    .spawn_terminal(terminal_action, ClientTabIndexOrPaneId::ClientId(client_id))
+                    .spawn_terminal(terminal_action.clone(), ClientTabIndexOrPaneId::ClientId(client_id))
                     .with_context(err_context)
                 {
                     Ok((pid2, starts_held)) => {
-                        let hold_for_command = if starts_held { run_command } else { None };
+                        let hold_for_command = if starts_held { run_command.clone() } else { None };
                         pty.bus
                             .senders
                             .send_to_screen(ScreenInstruction::VerticalSplit(
                                 PaneId::Terminal(pid2),
-                                pane_title,
+                                pane_title.clone(),
                                 hold_for_command,
                                 client_id,
                             ))
@@ -626,12 +626,12 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                     .senders
                                     .send_to_screen(ScreenInstruction::HorizontalSplit(
                                         PaneId::Terminal(*terminal_id),
-                                        pane_title,
+                                        pane_title.clone(),
                                         hold_for_command,
                                         client_id,
                                     ))
                                     .with_context(err_context)?;
-                                if let Some(run_command) = run_command {
+                                if let Some(ref run_command) = run_command {
                                     pty.bus
                                         .senders
                                         .send_to_screen(ScreenInstruction::PtyBytes(
@@ -649,7 +649,7 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                         .send_to_screen(ScreenInstruction::HoldPane(
                                             PaneId::Terminal(*terminal_id),
                                             Some(2), // exit status
-                                            run_command,
+                                            run_command.clone(),
                                             None,
                                             None,
                                         ))
@@ -660,9 +660,15 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                         _ => Err::<(), _>(err).non_fatal(),
                     },
                 }
+
+                pty.bus
+                .senders
+                .send_to_screen(ScreenInstruction::MoveFocusUp(client_id))
+                .with_context(err_context)?;
+
                 // Third Split
                 match pty
-                    .spawn_terminal(terminal_action, ClientTabIndexOrPaneId::ClientId(pid1))
+                    .spawn_terminal(terminal_action, ClientTabIndexOrPaneId::ClientId(client_id))
                     .with_context(err_context)
                 {
                     Ok((pid3, starts_held)) => {
@@ -671,7 +677,7 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                             .senders
                             .send_to_screen(ScreenInstruction::VerticalSplit(
                                 PaneId::Terminal(pid3),
-                                pane_title,
+                                pane_title.clone(),
                                 hold_for_command,
                                 client_id,
                             ))
@@ -719,6 +725,10 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                         _ => Err::<(), _>(err).non_fatal(),
                     },
                 }
+                pty.bus
+                .senders
+                .send_to_screen(ScreenInstruction::MoveFocusLeft(client_id))
+                .with_context(err_context)?;
             },
             PtyInstruction::UpdateActivePane(pane_id, client_id) => {
                 pty.set_active_pane(pane_id, client_id);
