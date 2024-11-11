@@ -544,16 +544,20 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                     _ => (false, None, name),
                 };
                 match pty
+
                     .spawn_terminal(terminal_action.clone(), ClientTabIndexOrPaneId::ClientId(client_id))
                     .with_context(err_context)
                 {
                     Ok((pid1, starts_held)) => {
                         let hold_for_command = if starts_held { run_command.clone() } else { None };
+
                         pty.bus
                             .senders
                             .send_to_screen(ScreenInstruction::HorizontalSplit(
                                 PaneId::Terminal(pid1),
+
                                 pane_title.clone(),
+
                                 hold_for_command,
                                 client_id,
                             ))
@@ -567,11 +571,13 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                     .senders
                                     .send_to_screen(ScreenInstruction::HorizontalSplit(
                                         PaneId::Terminal(*terminal_id),
+
                                         pane_title.clone(),
                                         hold_for_command,
                                         client_id,
                                     ))
                                     .with_context(err_context)?;
+
                                 if let Some(ref run_command) = run_command {
                                     pty.bus
                                         .senders
@@ -590,6 +596,7 @@ pub(crate) fn pty_thread_main(mut pty: Pty, layout: Box<Layout>) -> Result<()> {
                                         .send_to_screen(ScreenInstruction::HoldPane(
                                             PaneId::Terminal(*terminal_id),
                                             Some(2), // exit status
+
                                             run_command.clone(),
                                             None,
                                             None,

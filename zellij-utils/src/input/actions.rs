@@ -160,6 +160,7 @@ pub enum Action {
     NewPane(Option<Direction>, Option<String>, bool), // String is an optional pane name
 
     SplitPaneToFour(Option<Direction>, Option<String>, bool), // split pane to 4 panes in a 2x2 arrangment 
+
     /// Open the file in a new pane using the default editor, bool -> start suppressed
     EditFile(
         OpenFilePayload,
